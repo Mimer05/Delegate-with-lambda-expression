@@ -1,0 +1,36 @@
+
+using System;
+public delegate void UserNotification<T>(T message);
+class Poppin{
+    public event UserNotification<string> OnStringNotif;
+    public event UserNotification<int> OnIntNotif;
+    public void Pop<T>(T message){
+        if(message is string){
+            OnStringNotif?.Invoke(message as string);
+        }
+        else if (message is int){
+            OnIntNotif?.Invoke((int)(object)message);
+        }
+    }
+}
+public class Program
+{
+    public static void Main(string[] args)
+    {
+        Poppin poppin = new Poppin();
+        UserNotification<string> stringNotifHandler =(message)=> {
+             Console.WriteLine ("String Notif: "+message);
+        };
+        UserNotification<int> intNotifHandler = (number)=>{
+             Console.WriteLine ("int notif: "+number);
+        };  
+        poppin.OnStringNotif += stringNotifHandler;
+        poppin.OnIntNotif += intNotifHandler;
+        poppin.Pop("This is a notif message");
+        poppin.Pop(123);
+        poppin.OnStringNotif -= stringNotifHandler;
+        poppin.OnIntNotif -= intNotifHandler;
+        poppin.Pop("this message will not be notif");
+        poppin.Pop(456);
+    }
+}
